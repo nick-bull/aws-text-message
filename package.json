@@ -12,7 +12,7 @@
     "require": "./lib/index.js"
   },
   "description": "",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": {
     "name": "Nick Bull",
     "username": "nick-bull",
