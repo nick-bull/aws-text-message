@@ -2,6 +2,7 @@
   "name": "@nick-bull/aws-text-message",
   "type": "module",
   "main": "./src/index.js",
+  "extension": "js",
   "imports": {
     "#root": "./src",
     "#root/*": "./src/*"
@@ -47,7 +48,11 @@
     "test:watch": "jest --verbose --watch",
     "test:coverage": "npm test && open ./coverage/lcov-report/index.html"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@nick-bull/loggers": "^0.0.0",
+    "@nick-bull/to": "^1.0.2",
+    "aws-sdk": "^2.973.0"
+  },
   "devDependencies": {
     "@babel/cli": "^7.13.10",
     "@babel/core": "^7.13.10",
