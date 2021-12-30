@@ -1,27 +1,36 @@
-import {toError} from '@nick-bull/to';
-import {createSnsService} from './createSnsService';
+import AWS from 'aws-sdk';
+const {config, SNS} = AWS;
 
-const snsService = createSnsService();
-const {
-  publish,
-  setSMSAttributes,
-} = snsService;
+config.update({region: 'eu-west-2'});
 
-export const sendTextMessage = async (phoneNumber, textMessage) => {
-  const smsOptions = {
-    attributes: {DefaultSMSType: 'Transactional'},
-  };
-  const smsOptionsError = await toError(setSMSAttributes(smsOptions));
-  if (smsOptionsError) {
-    throw new Error(`sendTextMessage: ${smsOptionsError}`);
+const getMethods = (obj) => {
+  const methods = [];
+
+  for (const key in obj) {
+    if (typeof obj[key] === 'function') {
+      methods.push(key);
+    }
   }
 
-  const publishOptions = {
-    Message: textMessage,
-    PhoneNumber: phoneNumber,
-  };
-  const publishError = await toError(publish(publishOptions));
-  if (publishError) {
-    throw new Error(`sendTextMessage: ${publishError}`);
-  }
+  return methods;
 };
+
+export const createSnsService = () => {
+  const service = new SNS({apiVersion: '2010-03-31'});
+  const serviceMethodNames = getMethods(service);
+
+  return serviceMethodNames.reduce(
+    (acc, name) => {
+      acc[name] = async (...args) => {
+        const serviceCall = service[name](...args);
+
+        return (typeof serviceCall.promise === 'function')
+          ? serviceCall.promise()
+          : serviceCall;
+      };
+      return acc;
+    },
+    {},
+  );
+};
+
